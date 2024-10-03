@@ -7,7 +7,7 @@
  */
 
 #include <stdio.h>
-#include "SmartWheelKinematics.h"
+#include "kelo_motion_control/SmartWheelKinematics.h"
 
 #define LEFT_WHEEL 0
 #define RIGHT_WHEEL 1
