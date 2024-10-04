@@ -1,19 +1,5 @@
 #include "kelo_motion_control/KeloMotionControl.h"
 
-void init_kelo_base_config(KeloBaseConfig *config, int nWheels, int *index_to_EtherCAT,
-                           double radius, double castor_offset,
-                           double half_wheel_distance, double *wheel_coordinates,
-                           double *pivot_angles_deviation)
-{
-  config->nWheels = nWheels;
-  config->index_to_EtherCAT = index_to_EtherCAT;
-  config->radius = radius;
-  config->castor_offset = castor_offset;
-  config->half_wheel_distance = half_wheel_distance;
-  config->wheel_coordinates = wheel_coordinates;
-  config->pivot_angles_deviation = pivot_angles_deviation;
-}
-
 void init_torque_control_state(TorqueControlState *state, int N, int M)
 {
   state->A = gsl_matrix_calloc(N, M);
@@ -51,19 +37,20 @@ void set_platform_force(TorqueControlState *state, double *platform_force, int N
   }
 }
 
-void compute_wheel_torques(KeloBaseConfig *kelo_base_config, TorqueControlState *state,
+void compute_wheel_torques(int nWheels, double wheel_radius, double castor_offset, double half_wheel_distance,
+                           double *wheel_coordinates, TorqueControlState *state,
                            double *pivot_angles, double *wheel_torques, int N, int M)
 {
-  if (kelo_base_config == NULL || state == NULL || pivot_angles == NULL ||
-      wheel_torques == NULL)
+  if (wheel_coordinates == NULL || state == NULL || pivot_angles == NULL || wheel_torques == NULL)
   {
     printf("[KeloMotionControl] Error: Invalid input arguments.\n");
     exit(1);
   }
-  platform_force_to_wheel_torques(kelo_base_config, wheel_torques, pivot_angles, state->b,
+  platform_force_to_wheel_torques(nWheels, wheel_radius, castor_offset, half_wheel_distance,
+                                  wheel_coordinates, wheel_torques, pivot_angles, state->b,
                                   state->b_verify, state->A, state->A_inv_T, state->A_tmp,
-                                  state->A_inv_T_tmp, state->work, state->W, state->K,
-                                  state->u, state->V, state->u_inv, M, N, false);
+                                  state->A_inv_T_tmp, state->work, state->W, state->K, state->u,
+                                  state->V, state->u_inv, M, N, false);
 }
 
 void free_torque_control_state(TorqueControlState *state)

@@ -1,4 +1,3 @@
-#include "kelo_motion_control/EthercatCommunication.h"
 #include "kelo_motion_control/KeloMotionControl.h"
 
 int main(int argc, char *argv[])
@@ -11,9 +10,6 @@ int main(int argc, char *argv[])
   double wheel_coordinates[8] = {0.175,  0.1605,  -0.175, 0.1605,
                                  -0.175, -0.1605, 0.175,  -0.1605};  // x1,y1,x2,y2,..,y4
   double pivot_angles_deviation[4] = {-2.5, -1.25, -2.14, 1.49};
-  KeloBaseConfig kelo_base_config;
-  init_kelo_base_config(&kelo_base_config, nWheels, index_to_EtherCAT, radius, castor_offset, half_wheel_distance,
-                        wheel_coordinates, pivot_angles_deviation);
 
   const unsigned int N = 3;
   const unsigned int M = 8;
@@ -34,8 +30,8 @@ int main(int argc, char *argv[])
   {
     printf("Counter: %d\n", counter);
     usleep(10000);
-    compute_wheel_torques(&kelo_base_config, torque_control_state, pivot_angles,
-                          wheel_torques, N, M);
+    compute_wheel_torques(nWheels, radius, castor_offset, half_wheel_distance, wheel_coordinates,
+                          torque_control_state, pivot_angles, wheel_torques, N, M);
     printf("Wheel torques: ");
     for (size_t i = 0; i < M; i++)
     {

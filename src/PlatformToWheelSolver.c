@@ -25,7 +25,9 @@
 //   printf("\n");
 // }
 
-void platform_force_to_wheel_torques(KeloBaseConfig *config, double *wheel_torques, double *pivot_angles,
+void platform_force_to_wheel_torques(int nWheels, double wheel_radius, double castor_offset,
+                                     double half_wheel_distance, double *wheel_coordinates,
+                                     double *wheel_torques, double *pivot_angles,
                                      const gsl_matrix *b, gsl_matrix *b_verify, gsl_matrix *A,
                                      gsl_matrix *A_inv_T, gsl_matrix *A_tmp,
                                      gsl_matrix *A_inv_T_tmp, gsl_vector *work,
@@ -40,13 +42,8 @@ void platform_force_to_wheel_torques(KeloBaseConfig *config, double *wheel_torqu
    *
    */
 
-  double radius = config->radius;
-  double castor_offset = config->castor_offset;
-  double half_wheel_distance = config->half_wheel_distance;
-  double *wheel_coordinates = config->wheel_coordinates;
-
-  double pivot_forces[config->nWheels * 2];
-  for (int i = 0; i < config->nWheels * 2; i++)
+  double pivot_forces[nWheels * 2];
+  for (int i = 0; i < nWheels * 2; i++)
   {
     pivot_forces[i] = 0.0;
   }
@@ -67,7 +64,7 @@ void platform_force_to_wheel_torques(KeloBaseConfig *config, double *wheel_torqu
    * @brief 4. find torques at individual wheels (wheel_torques) -> SmartWheelKinematics.c
    *
    */
-  map_pivot_forces_to_wheel_torques(pivot_forces, wheel_torques, radius, castor_offset,
+  map_pivot_forces_to_wheel_torques(pivot_forces, wheel_torques, wheel_radius, castor_offset,
                                     half_wheel_distance);
 
   /**

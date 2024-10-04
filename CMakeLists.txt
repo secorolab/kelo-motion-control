@@ -13,7 +13,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR}/../build/)
 
 LINK_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/lib/)
 
-find_package(soem REQUIRED)
+find_package(kelo_platform REQUIRED)
 
 list(APPEND local_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/)
 
@@ -22,29 +22,24 @@ include_directories(
   ${local_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} SHARED
-	src/EthercatCommunication.c
+add_library(kelo_motion_control SHARED
+  src/KELORobotKinematics.c
+  src/SmartWheelKinematics.c
+  src/PlatformToWheelSolver.c
   src/KeloMotionControl.c
-	src/KELORobotKinematics.c
-	src/PlatformToWheelSolver.c
-	src/SmartWheelKinematics.c
-  src/PowerManagementUnit.c
-  src/mediator.c
 )
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(kelo_motion_control PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(${PROJECT_NAME}
-	soem
-	pthread
+target_link_libraries(kelo_motion_control
 	gsl
 	gslcblas
 	m	
 )
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS kelo_motion_control
   EXPORT ${PROJECT_NAME}-targets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -86,18 +81,23 @@ install(DIRECTORY include/
   FILES_MATCHING PATTERN "*.h"
 )
 
+add_subdirectory(src/example)
+
 # add all cpp files in the test directory as test sources
-file(GLOB test_sources test/*.c test/*.cpp)
+# file(GLOB test_sources 
+  # test/*.c 
+  # test/*.cpp
+# )
 
 # make executables
-foreach(source ${test_sources})
-  message(STATUS "Adding test: ${source}")
-  get_filename_component(name ${source} NAME_WE)
-  add_executable(${name} ${source})
-  target_link_libraries(${name} ${PROJECT_NAME} soem pthread gsl gslcblas m)
+# foreach(source ${test_sources})
+#   message(STATUS "Adding test: ${source}")
+#   get_filename_component(name ${source} NAME_WE)
+#   add_executable(${name} ${source})
+#   target_link_libraries(${name} ${PROJECT_NAME} soem pthread gsl gslcblas m)
 
-  set_target_properties(${name} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  set_target_properties(${name} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+#   set_target_properties(${name} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#   set_target_properties(${name} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 
-  install(TARGETS ${name} RUNTIME DESTINATION bin)
-endforeach(source ${test_sources})
+#   install(TARGETS ${name} RUNTIME DESTINATION bin)
+# endforeach(source ${test_sources})

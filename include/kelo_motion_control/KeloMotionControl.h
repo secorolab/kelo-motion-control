@@ -1,8 +1,14 @@
+/**
+ * @author Vamsi Kalagaturu (vamsikalagaturu@gmail.com)
+ * @brief
+ */
+
 #ifndef KELO_MOTION_CONTROL_H
 #define KELO_MOTION_CONTROL_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <gsl/gsl_blas.h>
@@ -15,39 +21,34 @@ extern "C" {
 
 #include "kelo_motion_control/PlatformToWheelSolver.h"
 
-#define MOTOR_CONST 0.29
+  typedef struct
+  {
+    gsl_matrix *A;
+    gsl_matrix *A_inv_T;
+    gsl_matrix *A_tmp;
+    gsl_matrix *A_inv_T_tmp;
+    gsl_vector *work;
+    gsl_matrix *W;
+    gsl_matrix *K;
+    gsl_vector *u;
+    gsl_matrix *V;
+    gsl_matrix *u_inv;
+    gsl_matrix *b;
+    gsl_matrix *b_verify;
+  } TorqueControlState;
 
-typedef struct
-{
-  gsl_matrix *A;
-  gsl_matrix *A_inv_T;
-  gsl_matrix *A_tmp;
-  gsl_matrix *A_inv_T_tmp;
-  gsl_vector *work;
-  gsl_matrix *W;
-  gsl_matrix *K;
-  gsl_vector *u;
-  gsl_matrix *V;
-  gsl_matrix *u_inv;
-  gsl_matrix *b;
-  gsl_matrix *b_verify;
-} TorqueControlState;
+  void init_torque_control_state(TorqueControlState *state, int N, int M);
 
-void init_kelo_base_config(KeloBaseConfig *config, int nWheels, int *index_to_EtherCAT,
-                           double radius, double castor_offset,
-                           double half_wheel_distance, double *wheel_coordinates,
-                           double *pivot_angles_deviation);
+  void set_weight_matrix(TorqueControlState *state, int N, int M);
 
-void init_torque_control_state(TorqueControlState *state, int N, int M);
+  void set_platform_force(TorqueControlState *state, double *platform_force, int N);
 
-void set_weight_matrix(TorqueControlState *state, int N, int M);
+  void compute_wheel_torques(int nWheels, double wheel_radius, double castor_offset,
+                             double half_wheel_distance, double *wheel_coordinates,
+                             TorqueControlState *state, double *pivot_angles,
+                             double *wheel_torques, int N, int M);
 
-void set_platform_force(TorqueControlState *state, double *platform_force, int N);
-
-void compute_wheel_torques(KeloBaseConfig *config, TorqueControlState *state, double *pivot_angles, double *wheel_torques,
-                           int N, int M);
-
-void free_torque_control_state(TorqueControlState *state);
+  void free_torque_control_state(TorqueControlState *state);
 
 #ifdef __cplusplus
 }
