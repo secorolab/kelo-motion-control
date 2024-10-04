@@ -28,6 +28,7 @@ add_library(${PROJECT_NAME} SHARED
 	src/KELORobotKinematics.c
 	src/PlatformToWheelSolver.c
 	src/SmartWheelKinematics.c
+  src/PowerManagementUnit.c
   src/mediator.c
 )
 target_include_directories(${PROJECT_NAME} PUBLIC

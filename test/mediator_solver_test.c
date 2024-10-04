@@ -17,8 +17,9 @@ int main()
 
   char ifname[] = "eno1";
   int result = 0;
+  uint32 pmu_command = BASE_ON;
 
-  establish_kelo_base_connection(kelo_base_config, ethercat_config, ifname, &result);
+  establish_kelo_base_connection(kelo_base_config, ethercat_config, ifname, pmu_command, &result);
 
   double pivot_angles[4] = {0.0};
   double pivot_velocities[4] = {0.0};

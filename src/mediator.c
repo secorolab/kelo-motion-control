@@ -1,7 +1,8 @@
 #include "kelo_motion_control/mediator.h"
 
 void establish_kelo_base_connection(KeloBaseConfig* kelo_base_config,
-                                    EthercatConfig* ethercat_config, char* ifname, int* result)
+                                    EthercatConfig* ethercat_config, char* ifname, 
+                                    uint32 pmu_command, int* result)
 {
   *result = 0;
 
@@ -19,22 +20,12 @@ void establish_kelo_base_connection(KeloBaseConfig* kelo_base_config,
     return;
   }
 
-  rxpdo1_t msg;
-  memset(&msg, 0, sizeof(msg));
-  msg.timestamp = 1;
-  msg.command1 = 0;
-  msg.command2 = 0;
-  msg.limit1_p = 0;
-  msg.limit1_n = 0;
-  msg.limit2_p = 0;
-  msg.limit2_n = 0;
-  msg.setpoint1 = 0;
-  msg.setpoint2 = 0;
+  // set the PMU command
+  command_pmu(ethercat_config, pmu_command);
+  process_data_exchange(ethercat_config);
 
-  for (size_t i = 0; i < kelo_base_config->nWheels; i++)
-  {
-    printf("index_to_EtherCAT[%ld]: %d\n", i, kelo_base_config->index_to_EtherCAT[i]);
-  }
+  rxpdo1_t msg;
+  create_empty_rx_msg(&msg);
 
   for (size_t i = 0; i < kelo_base_config->nWheels; i++)
   {
@@ -50,6 +41,8 @@ void establish_kelo_base_connection(KeloBaseConfig* kelo_base_config,
     printf("EtherCAT slaves have not reached operational state\n");
     return;
   }
+
+  printf("Connection established!\n\n");
 }
 
 void update_base_state(KeloBaseConfig* kelo_base_config, EthercatConfig* ethercat_config)
@@ -83,7 +76,6 @@ void set_kelo_base_torques(KeloBaseConfig* kelo_base_config, EthercatConfig* eth
   create_rx_msg(&rx_msg);
   set_wheel_torques(ethercat_config, &rx_msg, kelo_base_config->index_to_EtherCAT, wheel_torques,
                     kelo_base_config->nWheels, MOTOR_CONST);
-  send_and_receive_data(ethercat_config);
 }
 
 void calculate_robot_velocity(double* vx, double* vy, double* va, double* encDisplacement,

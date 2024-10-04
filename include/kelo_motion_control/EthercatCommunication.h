@@ -55,6 +55,8 @@ void process_data_exchange(EthercatConfig *config);
 
 void send_and_receive_data(EthercatConfig *config);
 
+void create_empty_rx_msg(rxpdo1_t *msg);
+
 void create_rx_msg(rxpdo1_t *msg);
 
 void set_wheel_torques(EthercatConfig *config, rxpdo1_t *msg, int *index_to_EtherCAT,

@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   ecx_context.manualstatechange = 0;  // should be 0
 
   int nWheels = 4;
-  int index_to_EtherCAT[4] = {6, 7, 3, 4};
+  int index_to_EtherCAT[4] = {3, 4, 6, 7};
   bool debug = false;
 
   /**
@@ -229,9 +229,9 @@ int main(int argc, char *argv[])
    */
   gsl_matrix_set(b, 0, 0, 0.);  // force is set in X-direction
   gsl_matrix_set(b, 1, 0, 0.);   // force is set in Y-direction
-  gsl_matrix_set(b, 2, 0, 3.);   // moment is set in anti-clockwise direction
+  gsl_matrix_set(b, 2, 0, 0.);   // moment is set in anti-clockwise direction
 
-  double pivot_angles_deviation[4] = {-2.5, -1.25, -2.14, 1.49};
+  double pivot_angles_deviation[4] = {0.0, 0.0, 0.0, 0.0};
 
   /**
    * @brief reading data from individual wheels
@@ -265,8 +265,7 @@ int main(int argc, char *argv[])
   double radius = 0.052;
   double castor_offset = 0.01;
   double half_wheel_distance = 0.0275;
-  double wheel_coordinates[8] = {0.175,  0.1605,  -0.175, 0.1605,
-                                 -0.175, -0.1605, 0.175,  -0.1605};  // x1,y1,x2,y2,..,y4
+  double wheel_coordinates[8] = {0.195, 0.21, -0.195, 0.21, -0.195, -0.21, 0.195, -0.21};  // x1,y1,x2,y2,..,y4
   
   init_kelo_base_config(&kelo_base_config, nWheels, index_to_EtherCAT, radius,
                         castor_offset, half_wheel_distance, wheel_coordinates,

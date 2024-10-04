@@ -91,14 +91,20 @@ void send_and_receive_data(EthercatConfig *config)
   ecx_receive_processdata(&config->ecx_context, EC_TIMEOUTRET);
 }
 
+void create_empty_rx_msg(rxpdo1_t *msg)
+{
+  memset(msg, 0, sizeof(rxpdo1_t));
+  msg->timestamp = 1;
+}
+
 void create_rx_msg(rxpdo1_t *msg)
 {
   msg->timestamp = time(NULL);
   msg->command1  = COM1_ENABLE1 | COM1_ENABLE2 | COM1_MODE_TORQUE;
-  msg->limit1_p  = 0.0;  // upper limit for first wheel
-  msg->limit1_n  = 0.0;  // lower limit for first wheel
-  msg->limit2_p  = 0.0;  // upper limit for second wheel
-  msg->limit2_n  = 0.0;  // lower limit for second wheel
+  msg->limit1_p  = 3;  // upper limit for first wheel
+  msg->limit1_n  = -3;  // lower limit for first wheel
+  msg->limit2_p  = 3;  // upper limit for second wheel
+  msg->limit2_n  = -3;  // lower limit for second wheel
   msg->setpoint1 = 0.0;  // setpoint for first wheel
   msg->setpoint2 = 0.0;  // setpoint for second wheel
 }
@@ -113,7 +119,7 @@ void set_wheel_torques(EthercatConfig *config, rxpdo1_t *msg, int *index_to_Ethe
     // msg->setpoint2 = motor_const * wheel_torques[2 * i + 1];  // units: (rad/sec) for second wheel
 
     // units: (rad/sec)
-    msg->setpoint1 = wheel_torques[2 * i] / motor_const;   // negative due to inverted frame 
+    msg->setpoint1 = -wheel_torques[2 * i] / motor_const;   // negative due to inverted frame 
     msg->setpoint2 = wheel_torques[2 * i + 1] / motor_const;
 
     // Get the output pointer for the current wheel based on EtherCAT mapping

@@ -7,12 +7,12 @@ extern "C" {
 
 #include "kelo_motion_control/EthercatCommunication.h"
 #include "kelo_motion_control/KeloMotionControl.h"
+#include "kelo_motion_control/PowerManagementUnit.h"
 
 // Initialization Functions
-void initialize_kelo_base(KeloBaseConfig* kelo_base_config, EthercatConfig* ethercat_config);
-
 void establish_kelo_base_connection(KeloBaseConfig* kelo_base_config,
-                                    EthercatConfig* ethercat_config, char* ifname, int* result);
+                                    EthercatConfig* ethercat_config, char* ifname,
+                                    uint32 pmu_command, int* result);
 
 void get_kelo_base_state(KeloBaseConfig* kelo_base_config, EthercatConfig* ethercat_config,
                          double* pivot_angles, double *pivot_velocities, double* wheel_encoder_values,
